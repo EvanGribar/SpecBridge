@@ -15,3 +15,4 @@ jobs:
       - run: pnpm test
       - run: pnpm lint
       - run: pnpm build
+      - run: pnpm pack:verify

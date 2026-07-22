@@ -29,3 +29,28 @@ export type CoverageStatus = z.infer<typeof CoverageStatusSchema>;
 export class SpecBridgeValidationError extends Error { constructor(message: string, public readonly issues: z.ZodIssue[]) { super(message); this.name = "SpecBridgeValidationError"; } }
 export function parseContract(input: unknown): RequirementContract { const parsed = RequirementContractSchema.safeParse(input); if (!parsed.success) throw new SpecBridgeValidationError("Invalid requirement contract", parsed.error.issues); return parsed.data; }
 export function parseCoverageReport(input: unknown): ReviewCoverageReport { const parsed = ReviewCoverageReportSchema.safeParse(input); if (!parsed.success) throw new SpecBridgeValidationError("Invalid coverage report", parsed.error.issues); return parsed.data; }
+/** Ensures a coverage report has exactly one result for every criterion in a contract. */
+export function validateCoverageAgainstContract(contractInput: RequirementContract, reportInput: ReviewCoverageReport): ReviewCoverageReport {
+  const contract = parseContract(contractInput);
+  const report = parseCoverageReport(reportInput);
+  if (report.contractId !== contract.id) throw new SpecBridgeValidationError("Coverage report targets a different contract", []);
+  const expected = new Map(contract.requirements.map((requirement) => [requirement.id, new Set(requirement.criteria.map((criterion) => criterion.id))]));
+  const seenRequirements = new Set<string>();
+  const issues: z.ZodIssue[] = [];
+  for (const requirement of report.requirements) {
+    if (seenRequirements.has(requirement.requirementId)) issues.push({ code: z.ZodIssueCode.custom, path: ["requirements"], message: `duplicate requirement coverage: ${requirement.requirementId}` });
+    seenRequirements.add(requirement.requirementId);
+    const expectedCriteria = expected.get(requirement.requirementId);
+    if (!expectedCriteria) { issues.push({ code: z.ZodIssueCode.custom, path: ["requirements"], message: `unknown requirement coverage: ${requirement.requirementId}` }); continue; }
+    const seenCriteria = new Set<string>();
+    for (const criterion of requirement.criteria) {
+      if (seenCriteria.has(criterion.criterionId)) issues.push({ code: z.ZodIssueCode.custom, path: ["requirements"], message: `duplicate criterion coverage: ${criterion.criterionId}` });
+      seenCriteria.add(criterion.criterionId);
+      if (!expectedCriteria.has(criterion.criterionId)) issues.push({ code: z.ZodIssueCode.custom, path: ["requirements"], message: `unknown criterion coverage: ${criterion.criterionId}` });
+    }
+    for (const criterionId of expectedCriteria) if (!seenCriteria.has(criterionId)) issues.push({ code: z.ZodIssueCode.custom, path: ["requirements"], message: `missing criterion coverage: ${criterionId}` });
+  }
+  for (const requirement of contract.requirements) if (!seenRequirements.has(requirement.id)) issues.push({ code: z.ZodIssueCode.custom, path: ["requirements"], message: `missing requirement coverage: ${requirement.id}` });
+  if (issues.length) throw new SpecBridgeValidationError("Coverage report does not conform to its contract", issues);
+  return report;
+}
