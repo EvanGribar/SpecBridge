@@ -1,0 +1,3 @@
+{
+  "compilerOptions": { "target": "ES2022", "module": "NodeNext", "moduleResolution": "NodeNext", "strict": true, "declaration": true, "declarationMap": true, "sourceMap": true, "skipLibCheck": true, "verbatimModuleSyntax": true, "noUncheckedIndexedAccess": true, "baseUrl": ".", "paths": { "@specbridge/core": ["packages/core/src/index.ts"], "@specbridge/adapters": ["packages/adapters/src/index.ts"], "@specbridge/sarif": ["packages/sarif/src/index.ts"] } }
+}
