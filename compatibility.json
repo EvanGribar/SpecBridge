@@ -1,0 +1,11 @@
+{
+  "specbridgeVersion": "0.2.0",
+  "schemaVersions": { "requirementContract": ["1.0"], "coverageReport": ["1.0"] },
+  "sarifVersion": "2.1.0",
+  "node": ">=20",
+  "moduleFormat": "ESM",
+  "supportedConsumers": [
+    { "repository": "EvanGribar/Swarm-Review", "version": "v1.1.0", "pinnedSpecBridgeCommit": "7555472ea92d5876fa212376d43d40997ae1da81" },
+    { "repository": "EvanGribar/SpecBench", "version": "v0.4.0-beta", "pinnedSpecBridgeCommit": "7555472ea92d5876fa212376d43d40997ae1da81" }
+  ]
+}
