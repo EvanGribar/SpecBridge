@@ -21,6 +21,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm release:check
       - uses: changesets/action@v1
+        if: vars.NPM_PUBLISH_ENABLED == 'true'
         with:
           version: pnpm changeset version
           publish: pnpm -r publish --access public --provenance
