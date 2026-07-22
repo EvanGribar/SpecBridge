@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "1.0",
+  "id": "account-limits",
+  "title": "Account limits",
+  "source": { "type": "json", "path": "examples/account-limits.json" },
+  "requirements": [{ "id": "seat-limit", "title": "Seat limit", "description": "Starter accounts permit three seats.", "severity": "blocking", "source": { "type": "json", "path": "examples/account-limits.json" }, "criteria": [{ "id": "enforce-limit", "description": "Reject a fourth seat." }] }]
+}

@@ -1,0 +1,1 @@
+{ "schemaVersion": "1.0", "contractId": "account-limits", "reviewer": { "name": "example-reviewer" }, "target": { "repository": "example/app" }, "requirements": [{ "requirementId": "seat-limit", "criteria": [{ "criterionId": "enforce-limit", "status": "violated", "explanation": "Missing limit check.", "evidence": [{ "path": "src/seats.ts", "startLine": 12 }] }] }] }

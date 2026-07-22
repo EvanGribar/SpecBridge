@@ -1,0 +1,1 @@
+{ "schemaVersion": "1.0", "contractId": "x", "reviewer": { "name": "r" }, "target": {}, "requirements": [{ "requirementId": "r", "criteria": [{ "criterionId": "c", "status": "satisfied", "explanation": "Fine", "evidence": [{ "path": "src/x.ts", "startLine": 4, "endLine": 3 }] }] }] }

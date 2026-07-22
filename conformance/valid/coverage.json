@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "1.0",
+  "contractId": "account-limits",
+  "reviewer": { "name": "fixture-reviewer", "version": "0" },
+  "target": { "repository": "example/app", "commitSha": "abc123", "baseUri": "file:///workspace/" },
+  "requirements": [{ "requirementId": "seat-limit", "severity": "blocking", "criteria": [{ "criterionId": "enforce-limit", "status": "violated", "explanation": "The route permits a fourth seat.", "confidence": 0.95, "evidence": [{ "path": "src/seats.ts", "startLine": 12, "endLine": 14, "symbol": "createSeat" }] }]}]
+}

@@ -1,0 +1,1 @@
+{ "schemaVersion": "1.0", "contractId": "x", "reviewer": { "name": "r" }, "target": {}, "requirements": [{ "requirementId": "r", "criteria": [{ "criterionId": "s", "status": "satisfied", "explanation": "Verified", "evidence": [] }, { "criterionId": "u", "status": "not_verifiable", "explanation": "No runtime data", "evidence": [] }] }] }

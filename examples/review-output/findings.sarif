@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "SpecBridge",
+          "rules": [
+            {
+              "id": "specbridge/seat-limit/enforce-limit",
+              "name": "enforce-limit",
+              "shortDescription": {
+                "text": "Requirement seat-limit"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              }
+            }
+          ]
+        }
+      },
+      "originalUriBaseIds": {
+        "SRCROOT": {
+          "uri": "file:///workspace/"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "specbridge/seat-limit/enforce-limit",
+          "level": "warning",
+          "message": {
+            "text": "The route permits a fourth seat."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/seats.ts",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 12,
+                  "endLine": 14
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "specbridge/v1": "ef195e2e1c9f512e3b3f815545377a398d21638cd04787789eb4e1d605bee708"
+          },
+          "properties": {
+            "requirementId": "seat-limit",
+            "criterionId": "enforce-limit",
+            "reviewer": "fixture-reviewer",
+            "confidence": 0.95
+          }
+        }
+      ]
+    }
+  ]
+}
