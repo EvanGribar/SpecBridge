@@ -19,6 +19,6 @@ The contract is deliberately reviewer-neutral. Swarm-Review remains responsible 
 
 ## OpenSpec subset
 
-The adapter only accepts a file under `openspec/specs/` using the documented Markdown convention supported by this initial release: `# title`, `## requirement-id: title`, and `- [criterion-id] description`. It does not infer requirements from arbitrary prose, parse change deltas, or resolve references.
+The adapter only accepts a file under `openspec/specs/` using the current OpenSpec headings: `# title`, `### Requirement: title`, and `#### Scenario: title`. Requirement and scenario titles become stable slug IDs. It does not infer requirements from arbitrary prose, parse change deltas, or resolve references.
 
 Authoritative references: [OASIS SARIF 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html), [GitHub's SARIF-supported subset](https://docs.github.com/en/code-security/reference/code-scanning/sarif-support-for-code-scanning), and [Fission-AI OpenSpec](https://github.com/Fission-AI/OpenSpec).
