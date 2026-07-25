@@ -16,6 +16,8 @@
     "schemas": "tsx scripts/generate-schemas.ts",
     "pack:verify": "tsx scripts/verify-packages.ts",
     "release:check": "pnpm schemas && pnpm typecheck && pnpm lint && pnpm build && pnpm test && pnpm pack:verify",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
     "specbridge": "tsx packages/cli/src/index.ts"
   },
   "devDependencies": {
