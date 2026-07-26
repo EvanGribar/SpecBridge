@@ -17,6 +17,27 @@ export interface AuditRule {
   run(inventory: RepositoryInventory): AuditFinding[];
 }
 
+const KNOWN_STANDARD_COMMANDS = new Set([
+  "install", "i", "add", "remove", "rm", "uninstall", "update", "upgrade",
+  "outdated", "audit", "publish", "pack", "link", "unlink", "import", "setup",
+  "store", "cache", "config", "root", "bin", "prune", "approve-builds", "dlx",
+  "exec", "create", "init", "run", "node", "tsx", "vitest", "tsc", "eslint",
+  "prettier", "workspaces", "workspace", "why", "list", "ls", "hoisted",
+  "env", "self-update", "test", "build", "lint", "typecheck", "start", "ci"
+]);
+
+const PLACEHOLDER_PATH_PATTERNS = [
+  /^path\/to\//i,
+  /^your\/path\//i,
+  /^example\//i,
+  /^sample\//i,
+  /^foo\/bar/i,
+  /^test\/path\/to\//i,
+  /^(function|method|unused|dead|jest|vitest|npm|pnpm)\//i,
+  /\/function\/method$/i,
+  /\/unused\/dead$/i,
+];
+
 // 1. missing-path & 11. invalid-path-escape & 8. stale-reference
 export const pathReferenceRule: AuditRule = {
   id: "missing-path",
@@ -46,8 +67,11 @@ export const pathReferenceRule: AuditRule = {
         // Ignore single-segment terms or extensionless keywords that might not be paths
         if (!pathClean.includes("/") && !pathClean.includes(".")) continue;
 
-        const existsFile = inventory.files.has(pathClean);
-        const existsDir = inventory.directories.has(pathClean) || Array.from(inventory.files).some((f) => f.startsWith(`${pathClean}/`));
+        // Filter out obvious placeholder paths (e.g. path/to/file.py) or generic slash keywords (e.g. function/method)
+        if (PLACEHOLDER_PATH_PATTERNS.some((pat) => pat.test(pathClean))) continue;
+
+        const existsFile = inventory.files.has(pathClean) || inventory.files.has(`.${pathClean}`) || inventory.files.has(`.${pathClean.startsWith("/") ? "" : "/"}${pathClean}`);
+        const existsDir = inventory.directories.has(pathClean) || inventory.directories.has(`.${pathClean}`) || Array.from(inventory.files).some((f) => f.startsWith(`${pathClean}/`));
 
         if (!existsFile && !existsDir) {
           const isStale = pathClean.includes("archive") || pathClean.includes("old") || pathClean.includes("deprecated");
@@ -83,17 +107,14 @@ export const missingScriptRule: AuditRule = {
     for (const inst of inventory.instructionFiles) {
       for (const cmd of inst.referencedCommands) {
         if (!cmd.scriptName) continue;
-        // Built-in scripts or commands that aren't package.json scripts
-        if (["test", "start", "build", "lint", "typecheck", "ci", "exec", "run"].includes(cmd.scriptName) && !inventory.packageScripts.has(cmd.scriptName)) {
-          // npm test, pnpm test, etc. can be standard npm targets if defined, but if missing:
-        }
 
         const scriptName = cmd.scriptName;
-        // If scriptName looks like a script invocation (not a flags or sub-args)
-        if (/^[a-zA-Z0-9_-]+$/.test(scriptName)) {
-          const knownStandard = ["install", "i", "add", "remove", "exec", "dlx", "create", "init", "node", "tsx", "vitest", "tsc", "eslint", "prettier"];
-          if (knownStandard.includes(scriptName)) continue;
 
+        // Ignore CLI flags (e.g., --filter, -w), version numbers (e.g. 10, 11), or built-in PM commands
+        if (scriptName.startsWith("-") || /^\d+(\.\d+)*$/.test(scriptName)) continue;
+        if (KNOWN_STANDARD_COMMANDS.has(scriptName)) continue;
+
+        if (/^[a-zA-Z0-9_-]+$/.test(scriptName)) {
           if (!inventory.packageScripts.has(scriptName)) {
             findings.push({
               id: `missing-script:${inst.path}:${cmd.line}:${scriptName}`,
@@ -127,7 +148,6 @@ export const packageManagerConflictRule: AuditRule = {
     for (const inst of inventory.instructionFiles) {
       for (const cmd of inst.referencedCommands) {
         if (cmd.packageManager && cmd.packageManager !== repoPm) {
-          // Exception: npx/npm dlx when repo uses pnpm is often acceptable, but direct `npm test` when repo uses `pnpm` is an error
           findings.push({
             id: `package-manager-conflict:${inst.path}:${cmd.line}`,
             ruleId: "package-manager-conflict",
@@ -164,7 +184,6 @@ export const runtimeConflictRule: AuditRule = {
 
         const instVer = parseInt(req.parsedVersion, 10);
 
-        // Simple version comparison logic: e.g. instVer = 20 while repoReq says >=24 or 24
         if (repoReq.raw.includes(">=24") && instVer < 24) {
           findings.push({
             id: `runtime-conflict:${inst.path}:${req.line}`,
@@ -208,7 +227,6 @@ export const emptyScopeRule: AuditRule = {
       if (!inst.applyToGlobs || inst.applyToGlobs.length === 0) continue;
 
       for (const glob of inst.applyToGlobs) {
-        // Simple prefix or suffix matching for globs
         const basePrefix = glob.replace(/\/\*\*?.*$/, "").replace(/\/\*.*$/, "");
 
         const hasMatch = Array.from(inventory.files).some((f) => f.startsWith(basePrefix) || f.includes(basePrefix)) ||
@@ -242,7 +260,6 @@ export const commandConflictRule: AuditRule = {
   run(inventory) {
     const findings: AuditFinding[] = [];
 
-    // Group test/migrate/build commands across files
     const cmdsByCategory = new Map<string, Array<{ inst: ParsedInstructionFile; cmd: ParsedInstructionFile["referencedCommands"][number] }>>();
 
     for (const inst of inventory.instructionFiles) {
@@ -261,7 +278,6 @@ export const commandConflictRule: AuditRule = {
 
       for (let i = 1; i < entries.length; i++) {
         const current = entries[i]!;
-        // If files are different and commands differ significantly
         if (first.inst.path !== current.inst.path && first.cmd.fullCommand !== current.cmd.fullCommand) {
           const isNestedContradiction = first.inst.path.includes("/") !== current.inst.path.includes("/");
           const ruleId = isNestedContradiction ? "contradictory-guidance" : "command-conflict";
@@ -302,7 +318,7 @@ export const duplicateGuidanceRule: AuditRule = {
       const lines = inst.rawContent.split(/\r?\n/);
       lines.forEach((lineText, idx) => {
         const trimmed = lineText.trim().replace(/^[-*#]\s*/, "");
-        if (trimmed.length < 25) return; // skip short lines
+        if (trimmed.length < 25) return;
 
         const normalized = trimmed.toLowerCase().replace(/[^a-z0-9]/g, "");
 
