@@ -1,6 +1,6 @@
 {
   "name": "@specbridge/repository",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Repository scanner and inventory collector for SpecBridge.",
   "license": "Apache-2.0",
   "repository": {
@@ -12,7 +12,12 @@
   "bugs": {
     "url": "https://github.com/EvanGribar/SpecBridge/issues"
   },
-  "keywords": ["repository", "inventory", "package-manager", "scripts"],
+  "keywords": [
+    "repository",
+    "inventory",
+    "package-manager",
+    "scripts"
+  ],
   "engines": {
     "node": ">=20"
   },
@@ -25,7 +30,9 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json"
   },

@@ -1,9 +1,9 @@
 {
-  "packages/core": "0.2.0",
-  "packages/parsers": "0.2.0",
-  "packages/repository": "0.2.0",
-  "packages/rules": "0.2.0",
-  "packages/adapters": "0.2.0",
-  "packages/sarif": "0.2.0",
-  "packages/cli": "0.2.0"
+  "packages/core": "0.3.0",
+  "packages/parsers": "0.3.0",
+  "packages/repository": "0.3.0",
+  "packages/rules": "0.3.0",
+  "packages/adapters": "0.3.0",
+  "packages/sarif": "0.3.0",
+  "packages/cli": "0.3.0"
 }
