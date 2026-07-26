@@ -24,12 +24,18 @@ try {
     if (Object.values(manifest.dependencies ?? {}).some((version) => version.startsWith("workspace:"))) throw new Error(`packed workspace dependency found in ${archive}`);
   }
   const tarball = (name: string) => join(temp, archives.find((archive) => archive.startsWith(`specbridge-${name.replace("@specbridge/", "")}`)) ?? "");
-  const consumer = join(temp, "consumer");
   const dependencies = Object.fromEntries(packages.map((name) => [`@specbridge/${name}`, `file:${tarball(name)}`]));
   await writeFile(join(temp, "package.json"), JSON.stringify({ private: true, dependencies, pnpm: { overrides: dependencies } }, null, 2));
   await runPnpm(["install", "--ignore-scripts"], temp);
   await writeFile(join(temp, "smoke.mjs"), 'import { RequirementContractSchema, ReviewCoverageReportSchema } from "@specbridge/core"; import { toSarif } from "@specbridge/sarif"; if (!RequirementContractSchema || !ReviewCoverageReportSchema || typeof toSarif !== "function") throw new Error("public imports unavailable");\n');
   await run("node", [join(temp, "smoke.mjs")], temp);
+
+  // Test packed CLI commands
+  await runPnpm(["exec", "specbridge", "audit"], temp);
+  await runPnpm(["exec", "specbridge", "audit", "--strict"], temp);
   await runPnpm(["exec", "specbridge", "audit", "--format", "json"], temp);
-  process.stdout.write(`Packed and externally consumed ${archives.length} SpecBridge packages.\n`);
+  await runPnpm(["exec", "specbridge", "audit", "--format", "sarif"], temp);
+  await runPnpm(["exec", "specbridge", "explain", "missing-path"], temp);
+
+  process.stdout.write(`Packed and externally consumed ${archives.length} SpecBridge packages across all CLI subcommands.\n`);
 } finally { await rm(temp, { recursive: true, force: true }); }

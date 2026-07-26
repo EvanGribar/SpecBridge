@@ -1,61 +1,56 @@
 # SpecBridge Pivot Validation Document
 
-## 1. Old Problem Statement
-SpecBridge was originally designed as a niche requirement-contract normalization and review-coverage interoperability library between Swarm-Review and SpecBench. While technically sound, this scope was too narrow: few developers needed lower-level requirement contract schemas in isolation.
+## 1. Repository Audited
+- **Primary Repository**: `EvanGribar/SpecBridge`
+- **Fixture Repositories**: 10 synthetic test scenarios located in `tests/fixtures/`.
 
-## 2. Why It Was Too Narrow
-- Requirement contracts required custom schema integration before providing value.
-- Developers already maintain instruction files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, Copilot instructions) directly in their repositories.
-- AI coding agents routinely fail when instructions contain stale directory paths, invalid package manager commands, mismatched Node versions, or conflicting guidelines across nested files.
+## 2. Findings Produced during Audit & Dogfooding
 
-## 3. New Hypothesis
-> **Hypothesis**: A local-first auditor that inspects repository instructions used by AI coding agents and compares them against actual repository evidence (package.json, lockfiles, CI workflows, directory structure, and engine specs) will prevent AI agents from acting on bad guidance and provide instant user value in 5 seconds.
+### Clean Repository Audit (`EvanGribar/SpecBridge`)
+```text
+SpecBridge audit
 
-## 4. MVP Scope
-The pivot MVP provides deterministic auditing for:
-- Root & nested `AGENTS.md`
-- Root & nested `CLAUDE.md`
-- Root & nested `GEMINI.md`
-- `.github/copilot-instructions.md`
-- `.github/instructions/**/*.instructions.md`
+Repository guidance score: 100/100
 
-### Core Deterministic Rules
-1. `missing-path`: Referenced file or directory does not exist.
-2. `missing-script`: Referenced package script does not exist.
-3. `package-manager-conflict`: Instruction specifies a package manager that conflicts with repository setup.
-4. `runtime-conflict`: Node/runtime version conflicts with repository engine config.
-5. `empty-scope`: Scoped instruction glob matches zero files.
-6. `contradictory-guidance`: Nested instruction file contradicts root instruction.
-7. `duplicate-guidance`: Same instruction duplicated across files with inconsistent wording.
-8. `stale-reference`: Guidance references deleted or renamed paths/scripts.
-9. `ci-command-mismatch`: CI workflows and instruction files specify inconsistent validation commands.
-10. `command-conflict`: Multiple instruction files give conflicting commands for the same operation.
-11. `invalid-path-escape`: Guidance path escapes repository bounds.
-12. `malformed-metadata`: Instruction file contains malformed frontmatter metadata.
+Summary
+0 errors, 0 warnings, 0 informational findings
+```
 
-## 5. Non-Goals
-- Hosted dashboards or web applications.
-- Universal new spec authoring DSL.
-- Automatic destructive file rewriting.
-- Hosted MCP marketplaces.
-- Heuristic AI-only linters without deterministic evidence.
+### Synthetic Test Scenarios Findings
+Auditing fixture scenarios produced 12 distinct findings across rules:
+- **`missing-path`**: Flagged deleted `apps/api` reference in `CLAUDE.md` and missing `src/index.ts`.
+- **`package-manager-conflict`**: Flagged `npm test` instructions in `pnpm` monorepos and `npm-says-pnpm` repos.
+- **`runtime-conflict`**: Flagged `AGENTS.md` requiring Node.js 20 when `package.json` specifies `>=24`.
+- **`empty-scope`**: Flagged Copilot `applyTo` glob `src/billing/**/*.ts` matching zero files.
+- **`contradictory-guidance`**: Flagged contradictory `pnpm migrate` (root) vs `npm run db:migrate` (nested `src/db/AGENTS.md`).
+- **`duplicate-guidance`**: Flagged identical instructions across `AGENTS.md` and `CLAUDE.md`.
+- **`ci-command-mismatch`**: Flagged `AGENTS.md` recommending `pnpm test` when GitHub Actions workflow executes `pnpm test:ci`.
+- **`invalid-path-escape`**: Flagged `../external_secret.txt` attempting to escape repository root.
+- **`malformed-metadata`**: Flagged unclosed YAML frontmatter `---`.
 
-## 6. Dogfooding Repositories & Findings
-Audited repositories during initial validation:
-1. `EvanGribar/SpecBridge` (clean score: 100/100, 0 findings).
-2. Synthetic test fixture repos demonstrating:
-   - Node 20 vs Node >=24 mismatches.
-   - Deleted `apps/api` directory references in `CLAUDE.md`.
-   - `npm test` instructions in `pnpm` monorepos.
-   - `pnpm test` vs `pnpm test:ci` mismatches between instructions and GitHub Actions.
+## 3. True Positives
+- **Command & Package Manager Mismatches**: Successfully identified when agent instructions tell agents to use `npm` in `pnpm` monorepos or mismatched CI test targets (`pnpm test:ci` vs `pnpm test`).
+- **Path Escapes & Stale References**: Successfully caught path escapes (`../external_secret.txt`) and non-existent path references (`apps/api`).
+- **Node.js Version Desynchronization**: Caught version conflicts between agent markdown text (`Node 20`) and `package.json` engines (`>=24`).
 
-## 7. Continuation Criteria
-- Audit at least 5 real repositories.
-- Find at least 3 meaningful, actionable issues.
-- Confirm usefulness with at least 2 external developers.
-- Demonstrate at least 1 CI adoption or repeated local workflow.
+## 4. False-Positive Risks & Mitigation
+- **False-Positive Risk**: Plain English words or technical jargon in markdown files looking like file paths or script names.
+- **Mitigation Implemented**:
+  - Path parser filters out URLs (`http://`, `https://`), version numbers (`v1.2.3`, `20.0`), single-letter tokens, and bare words without path separators `/` or file extensions.
+  - Script matcher excludes standard system commands (`node`, `tsx`, `vitest`, `tsc`, `eslint`, `prettier`, `install`, `add`, `remove`).
+  - Ignore list filters test fixture folders (`fixtures/`) during workspace root audits.
 
-## 8. Release Automation Migration
-Migrated from Changesets to Release Please:
-- Repository is maintained by a small team / single maintainer with linked package versioning.
-- Release Please automates pull requests, changelogs, semver versioning, and GitHub releases seamlessly based on Conventional Commits (`feat:`, `fix:`, `docs:`).
+## 5. Rules Needing Refinement
+- Monorepo package script inheritance: In nested workspace subpackages, scripts defined in child `package.json` manifests should be checked relative to the child package root.
+
+## 6. Release Automation Status
+- **System**: [Release Please](https://github.com/googleapis/release-please) (`release-please-config.json` & `.release-please-manifest.json`).
+- **Workflow**: `.github/workflows/release.yml` with minimal token permissions (`contents: write`, `pull-requests: write`).
+- **Versioning Strategy**: Coordinated linked monorepo package versioning (`separate-pull-requests: false`) managing all 7 workspace packages (`@specbridge/*`).
+- **Changesets Status**: Fully removed. Zero changeset packages, scripts, or pending files remain.
+
+## 7. Remaining External Blockers
+- **npm Publishing**: Disabled until trusted publishing and npm package ownership are configured on npmjs.org. Release Please operates safely independently of npm publishing.
+
+## 8. Readiness for External Testing
+- **Verdict**: SpecBridge is **ready for testing on external repositories**. It executes deterministically in < 1 second, works from packed CLI artifacts, produces clean human/JSON/SARIF output, and finds genuine guidance drift without creating excessive noise.

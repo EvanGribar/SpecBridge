@@ -10,7 +10,7 @@ The first package-consumption release is `0.2.0`: the contract schema is stable 
 
 ## Boundaries, validation, and workflow
 
-Core owns schemas and contract-aware coverage validation. Adapters and SARIF use only Core's public export; CLI uses package imports. CI generates schemas, runs typecheck/test/lint/build, and validates packed artifacts. Changesets supports future release PRs and a release workflow publishes only through configured npm trusted publishing.
+Core owns schemas and contract-aware coverage validation. Parsers, Repository, Rules, Adapters, and SARIF use Core's public export; CLI uses package imports. CI generates schemas, runs typecheck/test/lint/build, and validates packed artifacts. Release Please supports future release PRs and automated GitHub release notes based on Conventional Commits.
 
 ## Publishing, migration, and rollback
 
