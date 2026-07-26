@@ -26,9 +26,99 @@ export type Requirement = z.infer<typeof RequirementSchema>;
 export type CriterionCoverage = z.infer<typeof CriterionCoverageSchema>;
 export type EvidenceLocation = z.infer<typeof EvidenceLocationSchema>;
 export type CoverageStatus = z.infer<typeof CoverageStatusSchema>;
+
+export const AuditSeveritySchema = z.enum(["error", "warning", "info"]);
+export const AuditConfidenceSchema = z.enum(["deterministic", "heuristic"]);
+
+export const FindingEvidenceSchema = z.object({
+  file: z.string(),
+  line: z.number().int().positive().optional(),
+  excerpt: z.string().optional(),
+});
+
+export const AuditFindingSchema = z.object({
+  id: z.string().min(1),
+  ruleId: z.string().min(1),
+  severity: AuditSeveritySchema,
+  title: z.string().min(1),
+  description: z.string().min(1),
+  evidence: z.array(FindingEvidenceSchema),
+  recommendation: z.string().optional(),
+  confidence: AuditConfidenceSchema,
+});
+
+export const GuidanceDeductionSchema = z.object({
+  ruleId: z.string(),
+  count: z.number().int().nonnegative(),
+  deduction: z.number().nonnegative(),
+});
+
+export const GuidanceScoreSchema = z.object({
+  value: z.number().min(0).max(100),
+  max: z.literal(100),
+  deductions: z.array(GuidanceDeductionSchema),
+});
+
+export const AuditReportSchema = z.object({
+  schemaVersion: z.literal(SCHEMA_VERSION),
+  repositoryPath: z.string(),
+  timestamp: z.string(),
+  score: GuidanceScoreSchema.optional(),
+  findings: z.array(AuditFindingSchema),
+  summary: z.object({
+    total: z.number().int().nonnegative(),
+    errors: z.number().int().nonnegative(),
+    warnings: z.number().int().nonnegative(),
+    info: z.number().int().nonnegative(),
+  }),
+});
+
+export const AuditConfigSchema = z.object({
+  version: z.number().optional(),
+  severity: z.record(z.enum(["error", "warning", "info", "ignore"])).optional(),
+  ignore: z.array(z.string()).optional(),
+  sensitive_paths: z.array(z.string()).optional(),
+  required_checks: z.array(z.string()).optional(),
+});
+
+export type AuditSeverity = z.infer<typeof AuditSeveritySchema>;
+export type AuditConfidence = z.infer<typeof AuditConfidenceSchema>;
+export type FindingEvidence = z.infer<typeof FindingEvidenceSchema>;
+export type AuditFinding = z.infer<typeof AuditFindingSchema>;
+export type GuidanceDeduction = z.infer<typeof GuidanceDeductionSchema>;
+export type GuidanceScore = z.infer<typeof GuidanceScoreSchema>;
+export type AuditReport = z.infer<typeof AuditReportSchema>;
+export type AuditConfig = z.infer<typeof AuditConfigSchema>;
+
+export function calculateGuidanceScore(findings: AuditFinding[]): GuidanceScore {
+  let score = 100;
+  const deductionsMap = new Map<string, { count: number; deduction: number }>();
+  for (const finding of findings) {
+    let penalty = 0;
+    if (finding.severity === "error") penalty = 10;
+    else if (finding.severity === "warning") penalty = 5;
+    else if (finding.severity === "info") penalty = 1;
+
+    score -= penalty;
+    const current = deductionsMap.get(finding.ruleId) ?? { count: 0, deduction: 0 };
+    deductionsMap.set(finding.ruleId, {
+      count: current.count + 1,
+      deduction: current.deduction + penalty,
+    });
+  }
+  const finalValue = Math.max(0, Math.min(100, score));
+  const deductions = Array.from(deductionsMap.entries()).map(([ruleId, d]) => ({
+    ruleId,
+    count: d.count,
+    deduction: d.deduction,
+  }));
+  return { value: finalValue, max: 100, deductions };
+}
+
 export class SpecBridgeValidationError extends Error { constructor(message: string, public readonly issues: z.ZodIssue[]) { super(message); this.name = "SpecBridgeValidationError"; } }
 export function parseContract(input: unknown): RequirementContract { const parsed = RequirementContractSchema.safeParse(input); if (!parsed.success) throw new SpecBridgeValidationError("Invalid requirement contract", parsed.error.issues); return parsed.data; }
 export function parseCoverageReport(input: unknown): ReviewCoverageReport { const parsed = ReviewCoverageReportSchema.safeParse(input); if (!parsed.success) throw new SpecBridgeValidationError("Invalid coverage report", parsed.error.issues); return parsed.data; }
+export function parseAuditReport(input: unknown): AuditReport { const parsed = AuditReportSchema.safeParse(input); if (!parsed.success) throw new SpecBridgeValidationError("Invalid audit report", parsed.error.issues); return parsed.data; }
 /** Ensures a coverage report has exactly one result for every criterion in a contract. */
 export function validateCoverageAgainstContract(contractInput: RequirementContract, reportInput: ReviewCoverageReport): ReviewCoverageReport {
   const contract = parseContract(contractInput);
@@ -54,3 +144,4 @@ export function validateCoverageAgainstContract(contractInput: RequirementContra
   if (issues.length) throw new SpecBridgeValidationError("Coverage report does not conform to its contract", issues);
   return report;
 }
+

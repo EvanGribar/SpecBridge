@@ -1,0 +1,33 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    "packages/core": {
+      "release-type": "node",
+      "package-name": "@specbridge/core"
+    },
+    "packages/parsers": {
+      "release-type": "node",
+      "package-name": "@specbridge/parsers"
+    },
+    "packages/repository": {
+      "release-type": "node",
+      "package-name": "@specbridge/repository"
+    },
+    "packages/rules": {
+      "release-type": "node",
+      "package-name": "@specbridge/rules"
+    },
+    "packages/adapters": {
+      "release-type": "node",
+      "package-name": "@specbridge/adapters"
+    },
+    "packages/sarif": {
+      "release-type": "node",
+      "package-name": "@specbridge/sarif"
+    },
+    "packages/cli": {
+      "release-type": "node",
+      "package-name": "@specbridge/cli"
+    }
+  }
+}

@@ -47,6 +47,15 @@ importers:
       '@specbridge/core':
         specifier: workspace:^
         version: link:../core
+      '@specbridge/parsers':
+        specifier: workspace:^
+        version: link:../parsers
+      '@specbridge/repository':
+        specifier: workspace:^
+        version: link:../repository
+      '@specbridge/rules':
+        specifier: workspace:^
+        version: link:../rules
       '@specbridge/sarif':
         specifier: workspace:^
         version: link:../sarif
@@ -56,6 +65,33 @@ importers:
       zod:
         specifier: ^3.24.3
         version: 3.25.76
+
+  packages/parsers:
+    dependencies:
+      '@specbridge/core':
+        specifier: workspace:^
+        version: link:../core
+
+  packages/repository:
+    dependencies:
+      '@specbridge/core':
+        specifier: workspace:^
+        version: link:../core
+      '@specbridge/parsers':
+        specifier: workspace:^
+        version: link:../parsers
+
+  packages/rules:
+    dependencies:
+      '@specbridge/core':
+        specifier: workspace:^
+        version: link:../core
+      '@specbridge/parsers':
+        specifier: workspace:^
+        version: link:../parsers
+      '@specbridge/repository':
+        specifier: workspace:^
+        version: link:../repository
 
   packages/sarif:
     dependencies:

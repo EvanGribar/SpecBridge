@@ -1,25 +1,22 @@
 {
-  "name": "@specbridge/cli",
+  "name": "@specbridge/rules",
   "version": "0.2.0",
-  "description": "Local-first auditor for repository instructions used by AI coding agents.",
+  "description": "Deterministic audit rules for repository instruction files.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/EvanGribar/SpecBridge.git",
-    "directory": "packages/cli"
+    "directory": "packages/rules"
   },
   "homepage": "https://github.com/EvanGribar/SpecBridge#readme",
   "bugs": {
     "url": "https://github.com/EvanGribar/SpecBridge/issues"
   },
-  "keywords": ["cli", "audit", "agent-instructions", "sarif", "specbridge"],
+  "keywords": ["audit", "rules", "agent-instructions", "linter"],
   "engines": {
     "node": ">=20"
   },
   "type": "module",
-  "bin": {
-    "specbridge": "./dist/index.js"
-  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -33,11 +30,8 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@specbridge/adapters": "workspace:^",
     "@specbridge/core": "workspace:^",
     "@specbridge/parsers": "workspace:^",
-    "@specbridge/repository": "workspace:^",
-    "@specbridge/rules": "workspace:^",
-    "@specbridge/sarif": "workspace:^"
+    "@specbridge/repository": "workspace:^"
   }
 }

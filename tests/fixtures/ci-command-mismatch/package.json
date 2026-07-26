@@ -1,0 +1,8 @@
+{
+  "name": "ci-command-mismatch",
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "test": "vitest",
+    "test:ci": "vitest run --coverage"
+  }
+}

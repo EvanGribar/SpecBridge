@@ -6,7 +6,7 @@ import { promisify } from "node:util";
 
 const exec = promisify(execFile);
 const root = resolve(import.meta.dirname, "..");
-const packages = ["core", "adapters", "sarif", "cli"] as const;
+const packages = ["core", "parsers", "repository", "rules", "adapters", "sarif", "cli"] as const;
 const run = async (command: string, args: string[], cwd = root) => exec(command, args, { cwd, windowsHide: true });
 const pnpmEntrypoint = process.env.npm_execpath;
 if (!pnpmEntrypoint) throw new Error("pnpm entrypoint is unavailable");
@@ -30,6 +30,6 @@ try {
   await runPnpm(["install", "--ignore-scripts"], temp);
   await writeFile(join(temp, "smoke.mjs"), 'import { RequirementContractSchema, ReviewCoverageReportSchema } from "@specbridge/core"; import { toSarif } from "@specbridge/sarif"; if (!RequirementContractSchema || !ReviewCoverageReportSchema || typeof toSarif !== "function") throw new Error("public imports unavailable");\n');
   await run("node", [join(temp, "smoke.mjs")], temp);
-  await runPnpm(["exec", "specbridge", "validate", join(root, "conformance", "valid", "minimal-contract.json"), "--json"], temp);
+  await runPnpm(["exec", "specbridge", "audit", "--format", "json"], temp);
   process.stdout.write(`Packed and externally consumed ${archives.length} SpecBridge packages.\n`);
 } finally { await rm(temp, { recursive: true, force: true }); }

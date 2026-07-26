@@ -1,0 +1,8 @@
+{
+  "name": "contradictory-agents",
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "migrate": "prisma migrate dev",
+    "db:migrate": "prisma migrate dev"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "clean-repo",
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint ."
+  }
+}
