@@ -1,0 +1,15 @@
+release:
+  branch: semverge/release
+  tagPrefix: v
+  independentTagPrefix: pkg-
+
+monorepo:
+  mode: independent
+  packages: [packages/*]
+  includeRoot: false
+  unscopedChanges: all
+
+readiness:
+  commands:
+    - name: release check
+      run: pnpm release:check
