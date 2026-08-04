@@ -37,6 +37,6 @@ jobs:
       - name: Install dependencies
         if: github.event_name == 'push'
         run: pnpm install --frozen-lockfile
-      - uses: EvanGribar/semverge@v0.1.7
+      - uses: EvanGribar/semverge@v0.1.8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
