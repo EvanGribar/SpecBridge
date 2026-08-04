@@ -1,6 +1,6 @@
 {
   "name": "@specbridge/cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Local-first auditor for repository instructions used by AI coding agents.",
   "license": "Apache-2.0",
   "repository": {
@@ -12,7 +12,13 @@
   "bugs": {
     "url": "https://github.com/EvanGribar/SpecBridge/issues"
   },
-  "keywords": ["cli", "audit", "agent-instructions", "sarif", "specbridge"],
+  "keywords": [
+    "cli",
+    "audit",
+    "agent-instructions",
+    "sarif",
+    "specbridge"
+  ],
   "engines": {
     "node": ">=20"
   },
@@ -28,7 +34,9 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json"
   },

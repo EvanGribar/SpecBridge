@@ -1,1 +1,43 @@
-{ "name": "@specbridge/core", "version": "0.2.0", "description": "Canonical requirement-contract and coverage-report schemas for SpecBridge.", "license": "Apache-2.0", "repository": { "type": "git", "url": "git+https://github.com/EvanGribar/SpecBridge.git", "directory": "packages/core" }, "homepage": "https://github.com/EvanGribar/SpecBridge#readme", "bugs": { "url": "https://github.com/EvanGribar/SpecBridge/issues" }, "keywords": ["requirements", "schemas", "specification", "coverage", "zod"], "engines": { "node": ">=20" }, "type": "module", "main": "./dist/index.js", "types": "./dist/index.d.ts", "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } }, "files": ["dist"], "scripts": { "build": "tsc -p tsconfig.json" }, "dependencies": { "zod": "^3.24.3" } }
+{
+  "name": "@specbridge/core",
+  "version": "0.3.0",
+  "description": "Canonical requirement-contract and coverage-report schemas for SpecBridge.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EvanGribar/SpecBridge.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/EvanGribar/SpecBridge#readme",
+  "bugs": {
+    "url": "https://github.com/EvanGribar/SpecBridge/issues"
+  },
+  "keywords": [
+    "requirements",
+    "schemas",
+    "specification",
+    "coverage",
+    "zod"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "zod": "^3.24.3"
+  }
+}
