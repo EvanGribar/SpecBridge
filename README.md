@@ -72,6 +72,18 @@ pnpm exec specbridge explain missing-path
 
 ## JSON and SARIF Output
 
+## Published Package Surface
+
+The release publishes the same independently versioned package surface used by the CLI:
+
+- `@specbridge/cli`
+- `@specbridge/core`
+- `@specbridge/adapters`
+- `@specbridge/parsers`
+- `@specbridge/repository`
+- `@specbridge/rules`
+- `@specbridge/sarif`
+
 ### JSON Output (`specbridge audit --format json`)
 ```json
 {
