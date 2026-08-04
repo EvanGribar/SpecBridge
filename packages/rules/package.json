@@ -1,6 +1,6 @@
 {
   "name": "@specbridge/rules",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Deterministic audit rules for repository instruction files.",
   "license": "Apache-2.0",
   "repository": {
@@ -12,7 +12,12 @@
   "bugs": {
     "url": "https://github.com/EvanGribar/SpecBridge/issues"
   },
-  "keywords": ["audit", "rules", "agent-instructions", "linter"],
+  "keywords": [
+    "audit",
+    "rules",
+    "agent-instructions",
+    "linter"
+  ],
   "engines": {
     "node": ">=20"
   },
@@ -25,7 +30,9 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json"
   },
