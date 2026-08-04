@@ -2,20 +2,37 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:
+    types: [closed]
+  release:
+    types: [published]
+
+concurrency:
+  group: semverge-${{ github.repository }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
   pull-requests: write
+  actions: read
 
 jobs:
-  release:
+  semverge:
     runs-on: ubuntu-latest
     steps:
-      - uses: googleapis/release-please-action@v4
-        id: release
+      - uses: actions/checkout@v4
+        if: github.event_name == 'push'
+      - uses: pnpm/action-setup@v4
+        if: github.event_name == 'push'
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
+          version: 10
+      - uses: actions/setup-node@v4
+        if: github.event_name == 'push'
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        if: github.event_name == 'push'
+        run: pnpm install --frozen-lockfile
+      - uses: EvanGribar/semverge@v0.1.4
