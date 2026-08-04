@@ -1,8 +1,7 @@
-# What's new in 0.3.0
+# What's new in 0.4.0
 
 A clear summary of the changes included in this release.
 
 ### Highlights
 
-- pivot SpecBridge to local-first AI agent guidance auditor
-- [audit 10 real public repositories and refine rule precision](https://github.com/EvanGribar/SpecBridge/pull/6) (#6)
+- [verify independent releases with SemVerge v0.1.7](https://github.com/EvanGribar/SpecBridge/pull/11) (#11)

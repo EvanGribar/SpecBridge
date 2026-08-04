@@ -1,6 +1,6 @@
 {
   "name": "@specbridge/parsers",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Agent instruction parsers for AGENTS.md, CLAUDE.md, GEMINI.md, and Copilot instructions.",
   "license": "Apache-2.0",
   "repository": {

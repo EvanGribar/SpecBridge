@@ -1,5 +1,5 @@
-# SemVerge release announcement: 0.3.0
+# SemVerge release announcement: 0.4.0
 
-SemVerge 0.3.0 includes:
+SemVerge 0.4.0 includes:
 
-- pivot SpecBridge to local-first AI agent guidance auditor
+- verify independent releases with SemVerge v0.1.7
