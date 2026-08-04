@@ -23,6 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         if: github.event_name == 'push'
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v4
         if: github.event_name == 'push'
         with:
@@ -35,6 +37,6 @@ jobs:
       - name: Install dependencies
         if: github.event_name == 'push'
         run: pnpm install --frozen-lockfile
-      - uses: EvanGribar/semverge@v0.1.4
+      - uses: EvanGribar/semverge@v0.1.6
         with:
-          github-token: ${{ github.token }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
