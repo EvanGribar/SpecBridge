@@ -1,3 +1,3 @@
-# Internal release summary for 0.3.0
+# Internal release summary for 0.4.0
 
-No internal-only changes were recorded.
+- verify independent releases with SemVerge v0.1.8
