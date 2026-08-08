@@ -1,0 +1,16 @@
+diff --git a/index.mjs b/index.mjs
+index c4bb861..6e587d1 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -8,9 +8,8 @@ export class Workspace {
+  invite(email) {
+-    // Seeded bug: increments usageCount before checking limit!
+-    this.usageCount++;
+     if (this.plan === "starter" && this.members.length >= 5) {
+-      return { success: false, error: "Seat limit reached" };
++      return { success: true };
+     }
++    this.usageCount++;
+     this.members.push(email);
+     return { success: true };
+   }

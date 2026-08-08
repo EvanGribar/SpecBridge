@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@specbridge/adapters": "workspace:^",
+    "@specbridge/benchmark": "workspace:^",
     "@specbridge/core": "workspace:^",
     "@specbridge/parsers": "workspace:^",
     "@specbridge/repository": "workspace:^",

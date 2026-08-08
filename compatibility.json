@@ -5,7 +5,14 @@
   "node": ">=20",
   "moduleFormat": "ESM",
   "supportedConsumers": [
-    { "repository": "EvanGribar/Swarm-Review", "version": "v1.1.0", "pinnedSpecBridgeCommit": "7555472ea92d5876fa212376d43d40997ae1da81" },
-    { "repository": "EvanGribar/SpecBench", "version": "v0.4.0-beta", "pinnedSpecBridgeCommit": "7555472ea92d5876fa212376d43d40997ae1da81" }
-  ]
+    { "repository": "EvanGribar/Swarm-Review", "version": "v1.1.0", "pinnedSpecBridgeCommit": "7555472ea92d5876fa212376d43d40997ae1da81" }
+  ],
+  "consolidatedBenchmark": {
+    "package": "@specbridge/benchmark",
+    "cli": "specbridge bench",
+    "reviewVersions": ["v0.1", "v0.2"],
+    "changeMode": "tasks/change",
+    "liveAdapters": "@specbridge/benchmark-adapters",
+    "migrationSource": "EvanGribar/SpecBench"
+  }
 }

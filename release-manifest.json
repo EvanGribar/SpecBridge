@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "mode": "independent",
-  "version": "@specbridge/adapters@0.4.0, @specbridge/cli@0.4.0, @specbridge/core@0.4.0, @specbridge/parsers@0.4.0, @specbridge/repository@0.4.0, @specbridge/rules@0.4.0, @specbridge/sarif@0.4.0",
+  "version": "@specbridge/adapters@0.4.0, @specbridge/benchmark@0.4.0, @specbridge/benchmark-adapters@0.4.0, @specbridge/cli@0.4.0, @specbridge/core@0.4.0, @specbridge/parsers@0.4.0, @specbridge/repository@0.4.0, @specbridge/rules@0.4.0, @specbridge/sarif@0.4.0",
   "generatedAt": "2026-08-04T21:34:40.875Z",
   "packages": [
     {
@@ -17,6 +17,34 @@
       "private": false,
       "releaseable": true,
       "dependencyUpdate": false
+    },
+    {
+      "id": "packages/benchmark",
+      "name": "@specbridge/benchmark",
+      "directory": "packages/benchmark",
+      "ecosystem": "node",
+      "previousVersion": "0.0.0",
+      "version": "0.4.0",
+      "bump": "minor",
+      "changelog": "packages/benchmark/CHANGELOG.md",
+      "customerNotes": "packages/benchmark/RELEASE_NOTES.md",
+      "private": false,
+      "releaseable": true,
+      "dependencyUpdate": true
+    },
+    {
+      "id": "packages/benchmark-adapters",
+      "name": "@specbridge/benchmark-adapters",
+      "directory": "packages/benchmark-adapters",
+      "ecosystem": "node",
+      "previousVersion": "0.0.0",
+      "version": "0.4.0",
+      "bump": "minor",
+      "changelog": "packages/benchmark-adapters/CHANGELOG.md",
+      "customerNotes": "packages/benchmark-adapters/RELEASE_NOTES.md",
+      "private": false,
+      "releaseable": true,
+      "dependencyUpdate": true
     },
     {
       "id": "packages/cli",

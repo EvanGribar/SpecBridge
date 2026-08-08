@@ -1,0 +1,33 @@
+version: 1
+id: user-visible-behavior
+mode: change
+
+repository:
+  fixture: fixtures/change/user-visible-behavior/repository
+
+task:
+  prompt: |
+    Format user-visible API error responses. Error responses must include structured code and message fields, and a valid ISO timestamp string. Distractor formats (like unix epoch seconds or custom formatted date strings) are not acceptable.
+
+requirements:
+  - id: UX-001
+    description: Error responses must return structured error object with code and message.
+    severity: blocking
+    checks:
+      - type: test
+        command: node test.mjs error-format
+
+  - id: UX-002
+    description: Error response must contain a valid ISO 8601 timestamp string.
+    severity: blocking
+    checks:
+      - type: test
+        command: node test.mjs timestamp-iso
+
+validation:
+  commands:
+    - node test.mjs
+
+budgets:
+  timeout_seconds: 60
+  max_output_bytes: 500000

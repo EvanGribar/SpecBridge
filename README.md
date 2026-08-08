@@ -1,129 +1,96 @@
 # SpecBridge
 
-SpecBridge audits the instructions AI coding agents use in your repository.
+SpecBridge is a local-first requirements quality toolkit for repositories used by AI coding agents. It has two complementary modes:
 
-Coding agents increasingly rely on files such as `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and Copilot instructions. Those files can become stale, contradict each other, or drift away from the repository they describe. SpecBridge checks them against your codebase and CI configuration before agents act on bad guidance.
+- `specbridge audit` deterministically checks agent instructions against repository evidence.
+- `specbridge bench` evaluates requirement-focused review and change behavior with reproducible cases, fixtures, scoring, and reports.
 
-## Before and After
+The audit path is provider-free. Benchmark review can run entirely offline; live model adapters are a separate optional package.
 
-### Before
-```text
-CLAUDE.md: "Run npm test and check apps/api before submitting PRs."
-Reality:   Repository uses pnpm, apps/api was deleted last month, and CI runs pnpm test:ci.
-Result:    AI agents fail builds, introduce invalid lockfiles, and hallucinate code edits.
-```
-
-### After
-```bash
-$ specbridge audit
-
-SpecBridge audit
-
-Repository guidance score: 72/100
-
-Errors
-- CLAUDE.md references apps/api, but that directory does not exist.
-- .github/copilot-instructions.md instructs agents to run npm test, but the repository uses pnpm.
-- AGENTS.md requires Node.js 20, but package.json requires Node.js >=24.
-
-Summary
-3 errors, 0 warnings, 0 informational findings
-```
-
-## Five-Minute Quick Start
+## Five-minute quick start
 
 ```bash
-# Audit current repository
+# Install and audit the current repository
+pnpm install
 pnpm exec specbridge audit
 
-# Audit in strict CI mode (exit code 1 on errors)
-pnpm exec specbridge audit --strict
+# Validate the consolidated review benchmark
+pnpm exec specbridge bench validate --benchmark v0.2
 
-# Export audit findings as JSON or GitHub SARIF
-pnpm exec specbridge audit --format json
-pnpm exec specbridge audit --format sarif
+# Run a deterministic fixture review without API keys
+pnpm exec specbridge bench review \
+  --reviewer json-file --fixture perfect --max-cases 3 \
+  --output results/benchmarks/run.json
+pnpm exec specbridge bench score --results results/benchmarks/run.json
 
-# Explain a specific finding or rule
-pnpm exec specbridge explain missing-path
+# Validate and run a change-mode task in a temporary workspace
+pnpm exec specbridge bench change validate --task tasks/change/authorization.yml
+pnpm exec specbridge bench change run --task tasks/change/authorization.yml --agent mock
 ```
 
-## Supported Instruction Files
+Use `specbridge --help` and `specbridge bench --help` for the command surface.
 
-- Root and nested `AGENTS.md`
-- Root and nested `CLAUDE.md`
-- Root and nested `GEMINI.md`
-- `.github/copilot-instructions.md`
-- `.github/instructions/**/*.instructions.md`
+## Deterministic audit
 
-## Current Deterministic Checks
+SpecBridge understands root and nested `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` files, GitHub Copilot instructions, and scoped instruction files. It checks them against package scripts, package managers, runtime engines, repository paths, CI workflows, and instruction metadata.
 
-1. **`missing-path`**: Referenced file or directory does not exist.
-2. **`missing-script`**: Referenced package script is not defined in `package.json`.
-3. **`package-manager-conflict`**: Wrong package manager specified in instructions (e.g. `npm` vs `pnpm`).
-4. **`runtime-conflict`**: Node.js/runtime version conflicts with repository engine config.
-5. **`empty-scope`**: Scoped instruction glob (`applyTo`) matches zero files.
-6. **`contradictory-guidance`**: Nested instruction file contradicts root instruction.
-7. **`duplicate-guidance`**: Identical instruction text appears in multiple files with inconsistent wording.
-8. **`stale-reference`**: Guidance references deleted or renamed paths/scripts.
-9. **`ci-command-mismatch`**: CI workflows and instruction files specify inconsistent validation commands.
-10. **`command-conflict`**: Multiple instruction files give conflicting commands for the same operation.
-11. **`invalid-path-escape`**: Instruction path attempts to escape repository bounds.
-12. **`malformed-metadata`**: Invalid YAML frontmatter or instruction metadata.
+Current rules include missing paths and scripts, package-manager and runtime conflicts, empty scopes, contradictory or duplicate guidance, stale references, CI command mismatches, command conflicts, invalid path escapes, and malformed metadata.
 
-## JSON and SARIF Output
-
-## Published Package Surface
-
-The release publishes the same independently versioned package surface used by the CLI:
-
-- `@specbridge/cli`
-- `@specbridge/core`
-- `@specbridge/adapters`
-- `@specbridge/parsers`
-- `@specbridge/repository`
-- `@specbridge/rules`
-- `@specbridge/sarif`
-
-### JSON Output (`specbridge audit --format json`)
-```json
-{
-  "schemaVersion": "1.0",
-  "repositoryPath": "/repo",
-  "timestamp": "2026-07-26T13:22:00.000Z",
-  "score": {
-    "value": 72,
-    "max": 100,
-    "deductions": [
-      { "ruleId": "package-manager-conflict", "count": 1, "deduction": 10 },
-      { "ruleId": "missing-path", "count": 2, "deduction": 18 }
-    ]
-  },
-  "findings": [
-    {
-      "id": "missing-path:CLAUDE.md:3:apps/api",
-      "ruleId": "missing-path",
-      "severity": "error",
-      "title": "Referenced file or directory does not exist",
-      "description": "Instruction file references 'apps/api', but that file or directory does not exist in the repository.",
-      "evidence": [{ "file": "CLAUDE.md", "line": 3, "excerpt": "apps/api" }],
-      "confidence": "deterministic"
-    }
-  ],
-  "summary": { "total": 3, "errors": 3, "warnings": 0, "info": 0 }
-}
+```bash
+specbridge audit --strict
+specbridge audit --format json
+specbridge audit --format sarif
+specbridge explain missing-path
 ```
 
-### SARIF Output (`specbridge audit --format sarif`)
-Produces standard GitHub Code Scanning SARIF 2.1.0 output for direct integration with GitHub Security tab and PR checks.
+The audit command never executes commands found in instruction files. It reads bounded local evidence, rejects repository escapes, and does not require network access or model credentials.
 
-## Security Model
+## Requirement contracts and coverage
 
-- **Zero Command Execution**: SpecBridge never executes shell commands found in instruction files.
-- **Path Traversal Guardrails**: Rejects symlinks or paths pointing outside the repository root.
-- **No Secret Leakage**: Secret values or environment tokens are never logged or printed.
-- **Offline First**: Runs completely locally without requiring network connections or external API keys.
+`@specbridge/core` owns the canonical `RequirementContract` and `ReviewCoverageReport` schemas. `@specbridge/adapters` accepts the supported JSON, Markdown, and OpenSpec inputs; `@specbridge/sarif` converts evidenced violations to SARIF 2.1.0. Unknown schema versions fail closed.
 
-## CI Integration Example
+Benchmark adapters for SpecBridge coverage reports and Swarm Review exports normalize into the same benchmark finding model. The benchmark package reuses Core's coverage status and criterion schemas; its `requirementId` field is only a benchmark result projection used for deterministic matching.
+
+## Requirement benchmark mode
+
+The consolidated benchmark surface keeps the useful SpecBench functionality in this repository:
+
+- versioned review cases under `benchmarks/` with controlled reference fixtures;
+- deterministic finding matching, precision, recall, F1, severity-weighted recall, critical detection, runtime, and cost metrics;
+- offline JSON, canonical SpecBridge coverage, and Swarm Review ingestion;
+- change-mode evaluation with temporary Git workspaces, patch capture, validation commands, cleanup, output redaction, and environment allowlisting;
+- static JSON and HTML reports, experiment configurations, repetitions, descriptive statistics, and adjudication records;
+- dry-run execution that makes no provider call.
+
+For live model-backed runs, install `@specbridge/benchmark-adapters` explicitly and pass `--live`. The optional package contains the AI SDK/OpenAI dependency; Core, the audit packages, and offline benchmark commands do not.
+
+```bash
+pnpm add @specbridge/benchmark-adapters
+OPENAI_API_KEY=... pnpm exec specbridge bench review --reviewer single-agent --live
+pnpm exec specbridge bench experiment --config experiments/v0.3/single-agent.json --dry-run
+```
+
+Benchmark cases measure adherence to explicit requirements, not general code-review quality. Published results retain their fixture provenance and should be interpreted as controlled, directional evidence.
+
+## Packages
+
+- `@specbridge/core`: canonical contracts, coverage validation, findings, scoring primitives, and audit schemas.
+- `@specbridge/parsers`: agent-instruction parsers.
+- `@specbridge/repository`: repository evidence scanner.
+- `@specbridge/rules`: deterministic audit rules and orchestrator.
+- `@specbridge/adapters`: contract input adapters.
+- `@specbridge/sarif`: SARIF 2.1.0 conversion.
+- `@specbridge/benchmark`: offline benchmark cases, adapters, scoring, reporting, change evaluation, and budget ledger.
+- `@specbridge/benchmark-adapters`: optional live model adapters.
+- `@specbridge/cli`: `audit`, `explain`, legacy contract commands, and the unified `bench` command group.
+
+## Swarm Review relationship
+
+`EvanGribar/Swarm-Review` remains a separate product and repository. This repository provides the canonical contract/coverage boundary and an offline Swarm Review ingestion adapter; it does not change Swarm Review's agent execution, debate, GitHub API, or PR-comment workflow. See [the integration follow-up](docs/SWARM_REVIEW_INTEGRATION.md).
+
+The former SpecBench repository is not archived or deleted by this migration. See [the consolidation plan](docs/SPECBENCH_CONSOLIDATION_PLAN.md) and [the retirement readiness proposal](docs/SPECBENCH_RETIREMENT_PLAN.md) for parity gates and the future, separately approved retirement operation.
+
+## CI integration
 
 ```yaml
 name: Audit Agent Instructions
@@ -143,20 +110,6 @@ jobs:
       - run: pnpm exec specbridge audit --strict
 ```
 
-## Packages
-
-- `@specbridge/core`: Core audit schemas, findings model, scoring formula, and legacy contract schemas.
-- `@specbridge/parsers`: Agent instruction parsers for `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and Copilot instructions.
-- `@specbridge/repository`: Repository evidence scanner (package managers, scripts, engines, CI workflows, monorepos).
-- `@specbridge/rules`: 12 deterministic audit rules and orchestrator.
-- `@specbridge/sarif`: SARIF 2.1.0 converter for audit findings and legacy coverage reports.
-- `@specbridge/cli`: Command-line auditor interface (`specbridge audit`, `specbridge explain`).
-- `@specbridge/adapters`: Legacy requirement contract input adapters.
-
-## Relationship to Original Requirement Contracts
-
-SpecBridge's original requirement-contract schemas (`RequirementContract`, `ReviewCoverageReport`) and adapters (`JsonAdapter`, `MarkdownAdapter`, `OpenSpecAdapter`) remain supported as lower-level interoperability capabilities.
-
 ## Status
 
-SpecBridge is currently in active product validation. Feedback and dogfooding reports are welcome in `docs/PIVOT_VALIDATION.md`.
+SpecBridge is in active product validation. Start with the [architecture](docs/ARCHITECTURE.md), [benchmark guide](docs/benchmark/README.md), and [compatibility notes](docs/COMPATIBILITY.md).

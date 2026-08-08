@@ -1,0 +1,33 @@
+version: 1
+id: state-invariant
+mode: change
+
+repository:
+  fixture: fixtures/change/state-invariant/repository
+
+task:
+  prompt: |
+    Enforce starter plan seat limit of 5 members. Failed or rejected invitation attempts must not increment workspace usage or mutate workspace state.
+
+requirements:
+  - id: STATE-001
+    description: Starter plan workspace active seat count cannot exceed 5.
+    severity: blocking
+    checks:
+      - type: test
+        command: node test.mjs seat-limit
+
+  - id: STATE-002
+    description: Failed invitations must not increment member count or usage state.
+    severity: blocking
+    checks:
+      - type: test
+        command: node test.mjs failed-invite-rollback
+
+validation:
+  commands:
+    - node test.mjs
+
+budgets:
+  timeout_seconds: 60
+  max_output_bytes: 500000

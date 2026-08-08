@@ -1,0 +1,45 @@
+{
+  "name": "@specbridge/benchmark-adapters",
+  "version": "0.4.0",
+  "description": "Optional live model adapters for SpecBridge benchmarks.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EvanGribar/SpecBridge.git",
+    "directory": "packages/benchmark-adapters"
+  },
+  "homepage": "https://github.com/EvanGribar/SpecBridge#readme",
+  "bugs": {
+    "url": "https://github.com/EvanGribar/SpecBridge/issues"
+  },
+  "keywords": [
+    "benchmark",
+    "ai-sdk",
+    "openai",
+    "model-adapter"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^3.0.0",
+    "@specbridge/benchmark": "workspace:^",
+    "ai": "^6.0.0",
+    "zod": "^3.24.3"
+  }
+}

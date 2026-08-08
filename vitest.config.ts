@@ -1,16 +1,20 @@
 import { defineConfig } from "vitest/config";
-import { fileURLToPath, URL } from "node:url";
+import { resolve } from "node:path";
+
+const source = (name: string) => resolve(process.cwd(), "packages", name, "src", "index.ts");
 
 export default defineConfig({
   resolve: {
     alias: {
-      "@specbridge/core": fileURLToPath(new URL("./packages/core/src/index.ts", import.meta.url)),
-      "@specbridge/parsers": fileURLToPath(new URL("./packages/parsers/src/index.ts", import.meta.url)),
-      "@specbridge/repository": fileURLToPath(new URL("./packages/repository/src/index.ts", import.meta.url)),
-      "@specbridge/rules": fileURLToPath(new URL("./packages/rules/src/index.ts", import.meta.url)),
-      "@specbridge/adapters": fileURLToPath(new URL("./packages/adapters/src/index.ts", import.meta.url)),
-      "@specbridge/sarif": fileURLToPath(new URL("./packages/sarif/src/index.ts", import.meta.url)),
-      "@specbridge/cli": fileURLToPath(new URL("./packages/cli/src/index.ts", import.meta.url)),
+      "@specbridge/core": source("core"),
+      "@specbridge/parsers": source("parsers"),
+      "@specbridge/repository": source("repository"),
+      "@specbridge/rules": source("rules"),
+      "@specbridge/adapters": source("adapters"),
+      "@specbridge/sarif": source("sarif"),
+      "@specbridge/cli": source("cli"),
+      "@specbridge/benchmark": source("benchmark"),
+      "@specbridge/benchmark-adapters": source("benchmark-adapters"),
     },
   },
 });

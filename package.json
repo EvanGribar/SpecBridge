@@ -11,7 +11,7 @@
   "scripts": {
     "build": "pnpm -r build",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "vitest run",
+    "test": "vitest run --configLoader runner",
     "lint": "eslint .",
     "schemas": "tsx scripts/generate-schemas.ts",
     "pack:verify": "tsx scripts/verify-packages.ts",
