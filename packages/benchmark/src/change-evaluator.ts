@@ -83,7 +83,7 @@ export async function runChangeEvaluation(options: ChangeEvaluatorOptions): Prom
       let stderr = "";
 
       try {
-        stdout = execSync(cmd, { cwd: workspace.tempDir, encoding: "utf8", timeout: 30000 });
+        stdout = execSync(cmd, { cwd: workspace.tempDir, encoding: "utf8", timeout: 30000, stdio: ["ignore", "pipe", "pipe"] });
       } catch (err: any) {
         exitCode = err.status !== undefined ? err.status : 1;
         stdout = err.stdout ? String(err.stdout) : "";
@@ -127,7 +127,7 @@ export async function runChangeEvaluation(options: ChangeEvaluatorOptions): Prom
         let stderr = "";
 
         try {
-          stdout = execSync(chk.command, { cwd: workspace.tempDir, encoding: "utf8", timeout: 30000 });
+          stdout = execSync(chk.command, { cwd: workspace.tempDir, encoding: "utf8", timeout: 30000, stdio: ["ignore", "pipe", "pipe"] });
         } catch (err: any) {
           exitCode = err.status !== undefined ? err.status : 1;
           stdout = err.stdout ? String(err.stdout) : "";

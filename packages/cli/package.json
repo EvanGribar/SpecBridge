@@ -1,7 +1,7 @@
 {
   "name": "@specbridge/cli",
   "version": "0.4.0",
-  "description": "Local-first auditor for repository instructions used by AI coding agents.",
+  "description": "SpecBridge helps make repository-based AI coding agents more reliable by auditing their instructions and benchmarking requirement adherence.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

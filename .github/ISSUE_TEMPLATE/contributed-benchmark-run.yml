@@ -1,7 +1,8 @@
 name: Contributed benchmark run
 description: Submit reproducible model-run metadata for review
 title: "[Run] "
-labels: [contributed-run]
+labels:
+  - contributed-run
 body:
   - type: input
     id: benchmark-version
