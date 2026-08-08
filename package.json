@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Local-first auditor for repository instructions used by AI coding agents.",
+  "description": "SpecBridge helps make repository-based AI coding agents more reliable by auditing their instructions and benchmarking requirement adherence.",
   "packageManager": "pnpm@10.32.1",
   "engines": {
     "node": ">=20"
@@ -11,7 +11,7 @@
   "scripts": {
     "build": "pnpm -r build",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "vitest run",
+    "test": "vitest run --configLoader runner",
     "lint": "eslint .",
     "schemas": "tsx scripts/generate-schemas.ts",
     "pack:verify": "tsx scripts/verify-packages.ts",

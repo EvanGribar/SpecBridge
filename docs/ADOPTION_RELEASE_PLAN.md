@@ -2,20 +2,22 @@
 
 ## Evidence and scope
 
-SpecBridge commit `7555472ea92d5876fa212376d43d40997ae1da81` is pinned by [Swarm-Review](https://github.com/EvanGribar/Swarm-Review) v1.1.0 (`7330c7a5e5bbd7eb6d8211e9009c77f5a1d75d5c`) and [SpecBench](https://github.com/EvanGribar/SpecBench) v0.4.0-beta (`953f9dbbdce003fc892e2cbed3ab620a17699c92`). This repository alone is changed; those pins remain valid until each consumer opts into packages.
+This change consolidates the useful SpecBench benchmark functionality into SpecBridge. Swarm Review remains an independent consumer and is not modified here. The old SpecBench repository and its existing pins remain intact until a separate retirement decision.
 
 ## Release decision
 
-The first package-consumption release is `0.2.0`: the contract schema is stable within its explicit `1.0` schema version, while the TypeScript API remains pre-1.0. All four packages are fixed together and internal dependencies use pnpm's `workspace:^` protocol, which is rewritten to compatible published ranges when packed.
+The contract and coverage schema remain explicitly versioned at `1.0`. The publishable workspace packages currently declare `0.4.0`; the root workspace metadata is older and must be reconciled by the normal independent-package release workflow before publication. Benchmark packages should be released with their dependency graph, while the live adapter package remains optional.
 
-## Boundaries, validation, and workflow
+## Boundaries and validation
 
-Core owns schemas and contract-aware coverage validation. Parsers, Repository, Rules, Adapters, and SARIF use Core's public export; CLI uses package imports. CI generates schemas, runs typecheck/test/lint/build, and validates packed artifacts. Release Please supports future release PRs and automated GitHub release notes based on Conventional Commits.
+Core owns schemas and contract-aware coverage validation. Parsers, Repository, Rules, Adapters, and SARIF use Core's public export. The benchmark package uses Core without defining a parallel public coverage contract. The CLI imports offline benchmark code directly and dynamically loads live adapters only for explicit `--live` runs.
+
+The release check should generate schemas, run typecheck, lint, build, the full test suite, pack every publishable package, install the packed artifacts in isolation, and exercise audit plus offline benchmark smoke commands.
 
 ## Publishing, migration, and rollback
 
-Package publication is conditional on ownership, npm trusted-publishing configuration, and successful CI. Consumers can move from git pins to `^0.2.0` package ranges on their own schedules. Roll back by deprecating a bad npm version, retaining the immutable GitHub tag, and reverting consumer dependency updates; do not rewrite tags or published packages.
+Consumers can migrate from git pins or the old benchmark repository to published `@specbridge/*` packages on their own schedules. Publish the GitHub release and tested tarballs only after package-version alignment, offline parity, and optional-adapter installation are proven. Roll back by deprecating a bad package version and reverting consumer dependency updates; do not rewrite tags or published packages.
 
 ## Known blockers
 
-This audit cannot establish npm namespace ownership or trusted-publisher configuration from repository contents. If either is absent, publish the GitHub release and attach tested tarballs rather than attempting npm publication.
+Repository contents cannot establish npm namespace ownership, trusted-publishing configuration, or Swarm Review's upstream implementation schedule. These require release-owner and upstream follow-up decisions.

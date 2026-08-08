@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added the unified `specbridge bench` command surface for offline review, scoring, reporting, experiments, and change-mode evaluation.
+- Kept live model adapters behind the optional `@specbridge/benchmark-adapters` package.
+
 ## [0.4.0] - 2026-08-04
 
 ### Features

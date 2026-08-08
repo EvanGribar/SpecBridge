@@ -1,18 +1,22 @@
 # Migrating from a Git pin
 
-Swarm-Review and SpecBench may keep their current SpecBridge submodule and commit pin until they intentionally migrate. Their current pin, `7555472ea92d5876fa212376d43d40997ae1da81`, remains compatible.
+Swarm Review may keep its current SpecBridge submodule and commit pin until its own integration is ready. The old SpecBench repository should not be archived as part of this migration; its benchmark consumers can move to the consolidated packages independently.
 
-When ready, replace the submodule or local bridge with published dependencies:
+For a package consumer, replace the old bridge or submodule with the published dependencies it uses:
 
 ```json
 {
   "dependencies": {
-    "@specbridge/core": "^0.2.0",
-    "@specbridge/adapters": "^0.2.0",
-    "@specbridge/sarif": "^0.2.0",
-    "@specbridge/cli": "^0.2.0"
+    "@specbridge/core": "^0.4.0",
+    "@specbridge/adapters": "^0.4.0",
+    "@specbridge/sarif": "^0.4.0",
+    "@specbridge/benchmark": "^0.4.0",
+    "@specbridge/cli": "^0.4.0"
+  },
+  "optionalDependencies": {
+    "@specbridge/benchmark-adapters": "^0.4.0"
   }
 }
 ```
 
-Swarm-Review should use Core contracts and coverage reports plus the SARIF package instead of a local SARIF bridge. SpecBench should ingest Core coverage records through its native adapter. Retain fixture provenance while switching the dependency, run each project's existing offline suite, then remove only the obsolete submodule references.
+Use `@specbridge/core` directly for contracts and coverage; the broken `specbridge-bridge` re-export is not part of the consolidated tree. Retain fixture provenance, run the consumer's existing offline suite, and add the Swarm Review criterion-id follow-up before changing its live workflow.

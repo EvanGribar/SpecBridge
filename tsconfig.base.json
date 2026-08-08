@@ -18,7 +18,9 @@
       "@specbridge/rules": ["packages/rules/src/index.ts"],
       "@specbridge/adapters": ["packages/adapters/src/index.ts"],
       "@specbridge/sarif": ["packages/sarif/src/index.ts"],
-      "@specbridge/cli": ["packages/cli/src/index.ts"]
+      "@specbridge/cli": ["packages/cli/src/index.ts"],
+      "@specbridge/benchmark": ["packages/benchmark/src/index.ts"],
+      "@specbridge/benchmark-adapters": ["packages/benchmark-adapters/src/index.ts"]
     }
   }
 }

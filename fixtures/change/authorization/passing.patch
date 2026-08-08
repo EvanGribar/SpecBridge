@@ -1,0 +1,13 @@
+diff --git a/index.mjs b/index.mjs
+index a9a2744..f5c7050 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -2,5 +2,8 @@ export function inviteMember(currentUser, email) {
+   if (!currentUser) {
+     return { status: 401, error: "Unauthorized" };
+   }
++  if (currentUser.role !== "admin") {
++    return { status: 403, error: "Forbidden" };
++  }
+   return { status: 200, success: true, invited: email };
+ }

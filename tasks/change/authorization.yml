@@ -1,0 +1,33 @@
+version: 1
+id: authorization
+mode: change
+
+repository:
+  fixture: fixtures/change/authorization/repository
+
+task:
+  prompt: |
+    Enforce workspace invitation authorization. Only users with role 'admin' may invite new members. Non-admin attempts must return 403 Forbidden.
+
+requirements:
+  - id: AUTH-001
+    description: Only users with role 'admin' can invite new workspace members.
+    severity: blocking
+    checks:
+      - type: test
+        command: node test.mjs auth-role
+
+  - id: AUTH-002
+    description: Non-admin invitation attempts must return 403 Forbidden.
+    severity: blocking
+    checks:
+      - type: test
+        command: node test.mjs auth-forbidden
+
+validation:
+  commands:
+    - node test.mjs
+
+budgets:
+  timeout_seconds: 60
+  max_output_bytes: 500000

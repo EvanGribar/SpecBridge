@@ -1,0 +1,48 @@
+{
+  "name": "@specbridge/benchmark",
+  "version": "0.4.0",
+  "description": "Offline-first requirement-adherence benchmarks, scoring, reporting, and change evaluation for SpecBridge.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EvanGribar/SpecBridge.git",
+    "directory": "packages/benchmark"
+  },
+  "homepage": "https://github.com/EvanGribar/SpecBridge#readme",
+  "bugs": {
+    "url": "https://github.com/EvanGribar/SpecBridge/issues"
+  },
+  "keywords": [
+    "benchmark",
+    "requirements",
+    "code-review",
+    "evaluation",
+    "offline"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "data"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepack": "node ../../scripts/prepare-benchmark-package.mjs",
+    "postpack": "node ../../scripts/prepare-benchmark-package.mjs --clean"
+  },
+  "dependencies": {
+    "@specbridge/core": "workspace:^",
+    "yaml": "^2.9.0",
+    "zod": "^3.24.3"
+  }
+}
