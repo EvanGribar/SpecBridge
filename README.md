@@ -1,11 +1,24 @@
 # SpecBridge
 
-SpecBridge is a local-first requirements quality toolkit for repositories used by AI coding agents. It has two complementary modes:
+## Keep your coding-agent instructions honest
 
-- `specbridge audit` deterministically checks agent instructions against repository evidence.
-- `specbridge bench` evaluates requirement-focused review and change behavior with reproducible cases, fixtures, scoring, and reports.
+SpecBridge checks `AGENTS.md`, `CLAUDE.md`, Copilot instructions, and other repository guidance against the codebase they are supposed to describe.
 
-The audit path is provider-free. Benchmark review can run entirely offline; live model adapters are a separate optional package.
+```bash
+npx specbridge audit
+```
+
+```text
+AGENTS.md:14
+✗ Says `pnpm test:unit`, but package.json has no `test:unit` script.
+
+CLAUDE.md:22
+✗ Requires Node 20, but CI runs Node 22.
+```
+
+The audit is local-first, deterministic, provider-free, and designed to catch instruction drift before an AI coding agent relies on it.
+
+SpecBridge also includes a reproducible requirement-adherence benchmark surface for review and change evaluation. Benchmark review can run offline; live model adapters remain optional.
 
 ## Five-minute quick start
 
